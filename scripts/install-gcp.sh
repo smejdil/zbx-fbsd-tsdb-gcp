@@ -13,5 +13,7 @@ pkg install -y zabbix5-server
 pkg install -y zabbix5-agent
 pkg install -y zabbix5-frontend
 pkg install -y zabbix5-java
-pkg install -y py-certbot-dns-cloudflare
+pkg install -y p5-JSON-RPC
+pkg install -y git
+portsnap fetch && portsnap extract
 # EOF
