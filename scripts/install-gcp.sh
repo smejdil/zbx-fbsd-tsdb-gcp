@@ -15,5 +15,6 @@ pkg install -y zabbix5-frontend
 pkg install -y zabbix5-java
 pkg install -y p5-JSON-RPC
 pkg install -y git
+git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
 portsnap fetch && portsnap extract
 # EOF
