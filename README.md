@@ -72,6 +72,5 @@ cd ./zbx-fbsd-tsdb-gcp/zabbix/api/
 
 - Create Zabbix user for API by Zabbix API
 - Use Zabbix API for other things
+- SSL Let's encrypt with certbot-dns-cloudflare
 - Other ...
-
-
