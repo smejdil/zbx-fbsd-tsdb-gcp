@@ -5,13 +5,13 @@ This small project is used for install Zabbix server with Zabbix 5.0 LTS on Free
 
 ## Dependencies
 
-- Package on dektop - google-cloud-sdk - Google Cloud SDK for Google Cloud Platform
-- Package on dektop - py37-cloudflare - Wrapper for the Cloudflare v4 API
-- Package on dektop - py-certbot-dns-cloudflare - Cloudflare DNS plugin for Certbot
+- Package on desktop - google-cloud-sdk - Google Cloud SDK for Google Cloud Platform
+- Package on desktop - py37-cloudflare - Wrapper for the Cloudflare v4 API
+- Package on desktop - py-certbot-dns-cloudflare - Cloudflare DNS plugin for Certbot
 
 ## How it works
 
-By Google Cloud SDK is intaled server zbx-fbsd-tsdb. After instalation run scripts for reconfigure OS and install Zabbix with PostgreSQL and TimescaleDB.
+By Google Cloud SDK is intalled server zbx-fbsd-tsdb. After instalation run scripts for reconfigure OS and install Zabbix with PostgreSQL and TimescaleDB.
 
 ## Features
 
