@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/bin/sh
 #
 # Install example API file and Perl modul
 #
