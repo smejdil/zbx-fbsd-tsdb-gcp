@@ -51,7 +51,7 @@ git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
 portsnap fetch && portsnap extract
 ./zbx-fbsd-tsdb-gcp/scripts/install-zabbix.sh
 ```
-http://34.107.115.225/zabbix/
+http://35.246.211.200/zabbix/
 
 - List VM and external IPv4
 
