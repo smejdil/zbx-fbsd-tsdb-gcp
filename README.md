@@ -43,11 +43,11 @@ cd /home/malyl/work/zbx-fbsd-tsdb-gcp
 ```
 gcloud compute ssh zbx-fbsd-tsdb
 sudo su -
+git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
 ./zbx-fbsd-tsdb-gcp/scripts/psql-enable.sh
 su -m postgres
 createuser -s root
 exit
-git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
 portsnap fetch && portsnap extract
 ./zbx-fbsd-tsdb-gcp/scripts/install-zabbix.sh
 ```
