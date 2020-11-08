@@ -43,6 +43,8 @@ cd /home/malyl/work/zbx-fbsd-tsdb-gcp
 ```
 gcloud compute ssh zbx-fbsd-tsdb
 sudo su -
+su -m postgres
+createuser -s root
 ./zbx-fbsd-tsdb-gcp/scripts/install_zabbix.sh
 ```
 

@@ -12,15 +12,16 @@ echo "--- PostgreSQL ---"
 /usr/local/etc/rc.d/postgresql initdb
 /usr/local/etc/rc.d/postgresql start
 
-su -m postgres
-createuser -s root
+# Run manualy before
+#su -m postgres
+#createuser -s root
 
 psql -l
 
 mkdir -p /data/pgsql
 chown postgres:postgres /data/pgsql
 
-psql -h localhost -d template1 -a -q -f zabbix-init.sql
+psql -h localhost -d template1 -a -q -f ./zbx-fbsd-tsdb-gcp/scripts/zabbix-init.sql
 #psql -h localhost -d database -U postgres -p 5432 -a -q -f /path/to/the/file.sql
 
 echo "--- Import Zabbix schema ---"
@@ -38,7 +39,7 @@ diff -u /var/db/postgres/data12/postgresql.conf-orig /var/db/postgres/data12/pos
 /usr/local/etc/rc.d/postgresql restart
 
 echo "--- Inicializace TimescaleDB ---"
-psql -h localhost -d zabbix -a -q -f zabbix-tsdb-init.sql
+psql -h localhost -d zabbix -a -q -f ./zbx-fbsd-tsdb-gcp/scripts/zabbix-tsdb-init.sql
 
 cd /usr/local/share/zabbix5/server/database/postgresql/
 psql -U zabbix zabbix < timescaledb.sql
