@@ -2,7 +2,7 @@
 #
 # Install and configure Zabbix with TSDB
 #
-# Lukas Maly <Iam@LukasMaly.NET> 7.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 8.11.2020
 #
 
 ## PostgreSQL

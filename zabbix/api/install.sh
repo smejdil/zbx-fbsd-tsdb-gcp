@@ -1,9 +1,14 @@
 #!/bin/sh
 #
-# Install example API file
+# Install example API file and Perl modul
 #
-# Lukas Maly <Iam@LukasMaly.NET> 7.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 8.11.2020
 #
+
+cd /usr/ports/devel/p5-JSON-RPC
+make install clean
+
+echo "--- Install API example file ---"
 
 INSTALL_DIR='/root/zabbix';
 mkdir ${INSTALL_DIR};
