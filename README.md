@@ -43,9 +43,7 @@ cd /home/malyl/work/zbx-fbsd-tsdb-gcp
 ```
 gcloud compute ssh zbx-fbsd-tsdb
 sudo su -
-/usr/local/etc/rc.d/postgresql enable
-/usr/local/etc/rc.d/postgresql initdb
-/usr/local/etc/rc.d/postgresql start
+./zbx-fbsd-tsdb-gcp/scripts/psql-enable.sh
 su -m postgres
 createuser -s root
 exit
@@ -53,6 +51,8 @@ git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
 portsnap fetch && portsnap extract
 ./zbx-fbsd-tsdb-gcp/scripts/install-zabbix.sh
 ```
+http://34.107.115.225/zabbix/
+
 - List VM and external IPv4
 
 ```
@@ -63,6 +63,12 @@ zbx-fbsd-tsdb - 35.246.211.200
 
 ```
 cli4 --post name='zabbix-gcp' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
+
+nslookup zabbix-gcp.pfsense.cz
+
+Name:	zabbix-gcp.pfsense.cz
+Address: 35.246.211.200
+
 ```
 - Install Zabbix API example
 - Create Zabbix user for API
@@ -70,9 +76,33 @@ cli4 --post name='zabbix-gcp' type=A content="35.246.211.200" /zones/:pfsense.cz
 cd ./zbx-fbsd-tsdb-gcp/zabbix/api/
 ./install.sh
 ```
+- Get SSL cert
+```
+cd /usr/ports/security/py-certbot-dns-cloudflare
+make install clean
+
+mkdir -p ~/.secrets/certbot/
+joe ~/.secrets/certbot/cloudflare.ini
+# Cloudflare API credentials used by Certbot
+dns_cloudflare_email = XXX
+dns_cloudflare_api_key = XXX
+chmod 400 ~/.secrets/certbot/cloudflare.ini
+
+certbot certonly \
+  --dns-cloudflare \
+  --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini \
+  --dns-cloudflare-propagation-seconds 60 \
+  -d zabbix-gcp.pfsense.cz
+...
+```
+- Enable SSL with Let's encrypt
+```
+./zbx-fbsd-tsdb-gcp/scripts/ssl-enable.sh
+```
+https://zabbix-gcp.pfsense.cz
+
 ## To do
 
 - Create Zabbix user for API by Zabbix API
 - Use Zabbix API for other things
-- SSL Let's encrypt with certbot-dns-cloudflare
 - Other ...

@@ -92,6 +92,7 @@ cp -v /usr/local/etc/apache24/httpd.conf.sample /usr/local/etc/apache24/httpd.co
 cd /usr/local/etc/apache24
 patch < httpd.conf.patch
 
+cd
 cp -v ./zbx-fbsd-tsdb-gcp/files/zabbix.conf /usr/local/etc/apache24/Includes/
 
 /usr/local/etc/rc.d/apache24 restart
@@ -114,7 +115,7 @@ patch < zabbix.conf.php.patch
 chown www:www zabbix.conf.php
 chmod 400 zabbix.conf.php
 
-# http://zabbix-gcp.pfsense.cz/zabbix/
+# http://34.107.115.225/zabbix/
 # Admin
 # zabbix
 

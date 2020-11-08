@@ -1,0 +1,155 @@
+--- httpd-ssl.conf.sample	2020-10-17 01:17:50.000000000 +0000
++++ httpd-ssl.conf	2020-11-08 17:40:13.502827000 +0000
+@@ -49,8 +49,8 @@
+ #   ensure these follow appropriate best practices for this deployment.
+ #   httpd 2.2.30, 2.4.13 and later force-disable aNULL, eNULL and EXP ciphers,
+ #   while OpenSSL disabled these by default in 0.9.8zf/1.0.0r/1.0.1m/1.0.2a.
+-SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+-SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
++#SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
++#SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4:!3DES
+ 
+ #  By the end of 2016, only TLSv1.2 ciphers should remain in use.
+ #  Older ciphers should be disallowed as soon as possible, while the
+@@ -69,15 +69,16 @@
+ #   own preference of either security or performance, therefore this
+ #   must be the prerogative of the web server administrator who manages
+ #   cpu load versus confidentiality, so enforce the server's cipher order.
+-SSLHonorCipherOrder on 
++SSLHonorCipherOrder off
+ 
+ #   SSL Protocol support:
+ #   List the protocol versions which clients are allowed to connect with.
+ #   Disable SSLv3 by default (cf. RFC 7525 3.1.1).  TLSv1 (1.0) should be
+ #   disabled as quickly as practical.  By the end of 2016, only the TLSv1.2
+ #   protocol or later should remain in use.
+-SSLProtocol all -SSLv3
+-SSLProxyProtocol all -SSLv3
++SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1 -TLSv1.2
++#SSLProxyProtocol all -SSLv3
++SSLSessionTickets off
+ 
+ #   Pass Phrase Dialog:
+ #   Configure the pass phrase gathering process.
+@@ -100,13 +101,13 @@
+ #   How-To for more information.
+ #
+ #   Enable stapling for all SSL-enabled servers:
+-#SSLUseStapling On
++SSLUseStapling On
+ 
+ #   Define a relatively small cache for OCSP Stapling using
+ #   the same mechanism that is used for the SSL session cache
+ #   above.  If stapling is used with more than a few certificates,
+ #   the size may need to be increased.  (AH01929 will be logged.)
+-#SSLStaplingCache "shmcb:/var/run/ssl_stapling(32768)"
++SSLStaplingCache "shmcb:/var/run/ssl_stapling(32768)"
+ 
+ #   Seconds before valid OCSP responses are expired from the cache
+ #SSLStaplingStandardCacheTimeout 3600
+@@ -118,15 +119,54 @@
+ ## SSL Virtual Host Context
+ ##
+ 
+-<VirtualHost _default_:443>
++<VirtualHost *:443>
+ 
+ #   General setup for the virtual host
+-DocumentRoot "/usr/local/www/apache24/data"
+-ServerName www.example.com:443
+-ServerAdmin you@example.com
+-ErrorLog "/var/log/httpd-error.log"
+-TransferLog "/var/log/httpd-access.log"
++DocumentRoot "/usr/local/www/zabbix5"
++ServerName zabbix-gcp.pfsense.cz:443
++ServerAdmin webmaster@pfsense.cz
++ErrorLog "/var/log/apache/zabbix.pfsense.cz-error.log"
++TransferLog "/var/log/apache/zabbix.pfsense.cz-access.log"
+ 
++# enable HTTP/2, if available
++Protocols h2 http/1.1
++
++# HTTP Strict Transport Security (mod_headers is required) (63072000 seconds)
++Header always set Strict-Transport-Security "max-age=63072000"
++
++<Directory "/usr/local/www/zabbix5">
++    Options FollowSymLinks
++    AllowOverride None
++    Require all granted
++
++    <IfModule mod_php7.c>
++        php_value max_execution_time 300
++        php_value memory_limit 128M
++        php_value post_max_size 16M
++        php_value upload_max_filesize 2M
++        php_value max_input_time 300
++        php_value max_input_vars 10000
++        php_value always_populate_raw_post_data -1
++        php_value date.timezone Europe/Prague
++    </IfModule>
++</Directory>
++
++<Directory "/usr/local/www/zabbix5/conf">
++    Require all denied
++</Directory>
++
++<Directory "/usr/local/www/zabbix5/app">
++    Require all denied
++</Directory>
++
++<Directory "/usr/local/www/zabbix5/include">
++    Require all denied
++</Directory>
++
++<Directory "/usr/local/www/zabbix5/local">
++    Require all denied
++</Directory>
++
+ #   SSL Engine Switch:
+ #   Enable/Disable SSL for this virtual host.
+ SSLEngine on
+@@ -141,7 +181,7 @@
+ #   Some ECC cipher suites (http://www.ietf.org/rfc/rfc4492.txt)
+ #   require an ECC certificate which can also be configured in
+ #   parallel.
+-SSLCertificateFile "/usr/local/etc/apache24/server.crt"
++SSLCertificateFile "/usr/local/etc/letsencrypt/live/zabbix-gcp.pfsense.cz/cert.pem"
+ #SSLCertificateFile "/usr/local/etc/apache24/server-dsa.crt"
+ #SSLCertificateFile "/usr/local/etc/apache24/server-ecc.crt"
+ 
+@@ -151,7 +191,7 @@
+ #   you've both a RSA and a DSA private key you can configure
+ #   both in parallel (to also allow the use of DSA ciphers, etc.)
+ #   ECC keys, when in use, can also be configured in parallel
+-SSLCertificateKeyFile "/usr/local/etc/apache24/server.key"
++SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/zabbix-gcp.pfsense.cz/privkey.pem"
+ #SSLCertificateKeyFile "/usr/local/etc/apache24/server-dsa.key"
+ #SSLCertificateKeyFile "/usr/local/etc/apache24/server-ecc.key"
+ 
+@@ -162,7 +202,7 @@
+ #   the referenced file can be the same as SSLCertificateFile
+ #   when the CA certificates are directly appended to the server
+ #   certificate for convenience.
+-#SSLCertificateChainFile "/usr/local/etc/apache24/server-ca.crt"
++SSLCertificateChainFile "/usr/local/etc/letsencrypt/live/zabbix-gcp.pfsense.cz/chain.pem"
+ 
+ #   Certificate Authority (CA):
+ #   Set the CA certificate verification path where to find CA
+@@ -172,7 +212,7 @@
+ #         to point to the certificate files. Use the provided
+ #         Makefile to update the hash symlinks after changes.
+ #SSLCACertificatePath "/usr/local/etc/apache24/ssl.crt"
+-#SSLCACertificateFile "/usr/local/etc/apache24/ssl.crt/ca-bundle.crt"
++SSLCACertificateFile "/usr/local/etc/letsencrypt/live/zabbix-gcp.pfsense.cz/fullchain.pem"
+ 
+ #   Certificate Revocation Lists (CRL):
+ #   Set the CA revocation path where to find CA CRLs for client
+@@ -284,7 +324,7 @@
+ #   Per-Server Logging:
+ #   The home of a custom SSL log file. Use this when you want a
+ #   compact non-error SSL logfile on a virtual host basis.
+-CustomLog "/var/log/httpd-ssl_request.log" \
++CustomLog "/var/log/apache/httpd-ssl_request.log" \
+           "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+ 
+ </VirtualHost>                                  
