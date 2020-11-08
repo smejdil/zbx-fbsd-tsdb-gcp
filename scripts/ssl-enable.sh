@@ -8,10 +8,12 @@
 ## SSL
 echo "--- SSL ---"
 
+cd
 cp -v ./zbx-fbsd-tsdb-gcp/files/httpd-ssl.conf.patch /usr/local/etc/apache24/extra/
 cd /usr/local/etc/apache24/extra/
 patch < httpd-ssl.conf.patch
 
+cd
 cp -v /usr/local/etc/apache24/httpd.conf.sample /usr/local/etc/apache24/httpd.conf
 cp -v ./zbx-fbsd-tsdb-gcp/files/httpd.conf.ssl.patch /usr/local/etc/apache24/
 cd /usr/local/etc/apache24/
