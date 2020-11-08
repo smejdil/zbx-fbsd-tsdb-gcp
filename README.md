@@ -101,6 +101,12 @@ certbot certonly \
 ```
 https://zabbix-gcp.pfsense.cz
 
+- Upgrade all ports
+```
+portsnap fetch && portsnap update && pkg version -v | grep upd
+screen
+portupgrade -a
+```
 ## To do
 
 - Create Zabbix user for API by Zabbix API
