@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/local/bin/perl
 #
 # Install example API file and Perl modul
 #
@@ -13,8 +13,8 @@ echo "--- Install API example file ---"
 INSTALL_DIR='/root/zabbix';
 mkdir ${INSTALL_DIR};
 
-install -g root -o root -m 700 auth.pl $INSTALL_DIR/
-install -g root -o root -m 700 hosts.pl $INSTALL_DIR/
+install -g wheel -o root -m 700 auth.pl $INSTALL_DIR/
+install -g wheel -o root -m 700 hosts.pl $INSTALL_DIR/
 
 
 # EOF

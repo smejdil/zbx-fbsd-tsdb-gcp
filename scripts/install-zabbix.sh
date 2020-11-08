@@ -8,11 +8,12 @@
 ## PostgreSQL
 echo "--- PostgreSQL ---"
 
-/usr/local/etc/rc.d/postgresql enable
-/usr/local/etc/rc.d/postgresql initdb
-/usr/local/etc/rc.d/postgresql start
-
 # Run manualy before
+
+#/usr/local/etc/rc.d/postgresql enable
+#/usr/local/etc/rc.d/postgresql initdb
+#/usr/local/etc/rc.d/postgresql start
+
 #su -m postgres
 #createuser -s root
 
@@ -39,9 +40,80 @@ diff -u /var/db/postgres/data12/postgresql.conf-orig /var/db/postgres/data12/pos
 /usr/local/etc/rc.d/postgresql restart
 
 echo "--- Inicializace TimescaleDB ---"
+cd
 psql -h localhost -d zabbix -a -q -f ./zbx-fbsd-tsdb-gcp/scripts/zabbix-tsdb-init.sql
 
 cd /usr/local/share/zabbix5/server/database/postgresql/
 psql -U zabbix zabbix < timescaledb.sql
+
+## Zabbix
+echo "--- Rekconfigure Zabbix server ---"
+
+/usr/local/etc/rc.d/zabbix_server enable
+
+cd
+cp -v ./zbx-fbsd-tsdb-gcp/files/make.conf /etc/
+cp -v ./zbx-fbsd-tsdb-gcp/files/net-mgmt_zabbix5-server-options /var/db/ports/net-mgmt_zabbix5-server/options
+
+# Rekompilation Zabbix server for PostgreSQL support
+echo "--- Recompile Zabbix server ---"
+portupgrade -f zabbix5-server
+
+cp -v /usr/local/etc/zabbix5/zabbix_server.conf.sample /usr/local/etc/zabbix5/zabbix_server.conf
+sed -e "s/# DBSchema=/DBSchema=public/" -i "" /usr/local/etc/zabbix5/zabbix_server.conf
+sed -e "s/# DBPassword=/DBPassword=ZBX5_FBSD12_PSQL12_TSDB17/" -i "" /usr/local/etc/zabbix5/zabbix_server.conf
+
+/usr/local/etc/rc.d/zabbix_server start
+
+mkdir /var/log/zabbix
+ln -s /tmp/zabbix_server.log /var/log/zabbix/
+
+echo "--- Rekconfigure Zabbix agent ---"
+/usr/local/etc/rc.d/zabbix_agentd enable
+
+cp -v /usr/local/etc/zabbix5/zabbix_agentd.conf.sample /usr/local/etc/zabbix5/zabbix_agentd.conf
+sed -e "s/Hostname=Zabbix server/Hostname=fbsd-zbx-tsdb/" -i "" /usr/local/etc/zabbix5/zabbix_agentd.conf
+sed -e "s/# Include=\/usr\/local\/etc\/zabbix5\/zabbix_agentd.conf.d\/*.conf/Include=\/usr\/local\/etc\/zabbix5\/zabbix_agentd.conf.d\/*.conf/" -i "" /usr/local/etc/zabbix5/zabbix_agentd.conf
+
+/usr/local/etc/rc.d/zabbix_agentd restart
+
+ln -s /tmp/zabbix_agentd.log /var/log/zabbix/
+
+## Apache
+echo "--- Rekconfigure Apache web server ---"
+
+/usr/local/etc/rc.d/apache24 enable
+mkdir /var/log/apache/
+
+cp -v ./zbx-fbsd-tsdb-gcp/files/httpd.conf.patch /usr/local/etc/apache24/
+cp -v /usr/local/etc/apache24/httpd.conf.sample /usr/local/etc/apache24/httpd.conf
+
+cd /usr/local/etc/apache24
+patch < httpd.conf.patch
+
+cp -v ./zbx-fbsd-tsdb-gcp/files/zabbix.conf /usr/local/etc/apache24/Includes/
+
+/usr/local/etc/rc.d/apache24 restart
+
+## Zabbix frontend
+
+cd
+cp -v ./zbx-fbsd-tsdb-gcp/files/net-mgmt_zabbix5-frontend-options /var/db/ports/net-mgmt_zabbix5-frontend/options
+
+# Rekompilation Zabbix Frontend for PostgreSQL support
+echo "--- Recompile Zabbix frontend ---"
+
+portupgrade -f zabbix5-frontend
+
+cp -v ./zbx-fbsd-tsdb-gcp/files/zabbix.conf.php.patch /usr/local/www/zabbix5/conf/
+cp -v /usr/local/www/zabbix5/conf/zabbix.conf.php.example /usr/local/www/zabbix5/conf/zabbix.conf.php
+cd -v /usr/local/www/zabbix5/conf/
+patch < zabbix.conf.php.patch
+chown www:www zabbix.conf.php
+chmod 400 zabbix.conf.php
+
+# http://zabbix-gcp.pfsense.cz/zabbix/
+# Admin
+# zabbix
 
 # EOF

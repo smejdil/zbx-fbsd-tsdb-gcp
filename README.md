@@ -43,11 +43,14 @@ cd /home/malyl/work/zbx-fbsd-tsdb-gcp
 ```
 gcloud compute ssh zbx-fbsd-tsdb
 sudo su -
+/usr/local/etc/rc.d/postgresql enable
+/usr/local/etc/rc.d/postgresql initdb
+/usr/local/etc/rc.d/postgresql start
 su -m postgres
 createuser -s root
+exit
 ./zbx-fbsd-tsdb-gcp/scripts/install_zabbix.sh
 ```
-
 - List VM and external IPv4
 
 ```
@@ -59,9 +62,15 @@ zbx-fbsd-tsdb - 35.246.211.200
 ```
 cli4 --post name='zabbix-gcp' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
 ```
+- Install Zabbix API example
+- Create Zabbix user for API
+```
+cd ./zbx-fbsd-tsdb-gcp/zabbix/api/
+./install.sh
+```
 ## To do
 
-- Create Zabbix user by Zabbix API
+- Create Zabbix user for API by Zabbix API
 - Use Zabbix API for other things
 - Other ...
 
