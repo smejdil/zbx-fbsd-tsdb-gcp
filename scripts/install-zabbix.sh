@@ -53,6 +53,7 @@ echo "--- Rekconfigure Zabbix server ---"
 
 cd
 cp -v ./zbx-fbsd-tsdb-gcp/files/make.conf /etc/
+mkdir -p /var/db/ports/net-mgmt_zabbix5-server/
 cp -v ./zbx-fbsd-tsdb-gcp/files/net-mgmt_zabbix5-server-options /var/db/ports/net-mgmt_zabbix5-server/options
 
 # Rekompilation Zabbix server for PostgreSQL support
@@ -98,6 +99,7 @@ cp -v ./zbx-fbsd-tsdb-gcp/files/zabbix.conf /usr/local/etc/apache24/Includes/
 ## Zabbix frontend
 
 cd
+mkdir -p /var/db/ports/net-mgmt_zabbix5-frontend/
 cp -v ./zbx-fbsd-tsdb-gcp/files/net-mgmt_zabbix5-frontend-options /var/db/ports/net-mgmt_zabbix5-frontend/options
 
 # Rekompilation Zabbix Frontend for PostgreSQL support
@@ -107,7 +109,7 @@ portupgrade -f zabbix5-frontend
 
 cp -v ./zbx-fbsd-tsdb-gcp/files/zabbix.conf.php.patch /usr/local/www/zabbix5/conf/
 cp -v /usr/local/www/zabbix5/conf/zabbix.conf.php.example /usr/local/www/zabbix5/conf/zabbix.conf.php
-cd -v /usr/local/www/zabbix5/conf/
+cd /usr/local/www/zabbix5/conf/
 patch < zabbix.conf.php.patch
 chown www:www zabbix.conf.php
 chmod 400 zabbix.conf.php

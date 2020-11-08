@@ -49,7 +49,9 @@ sudo su -
 su -m postgres
 createuser -s root
 exit
-./zbx-fbsd-tsdb-gcp/scripts/install_zabbix.sh
+git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
+portsnap fetch && portsnap extract
+./zbx-fbsd-tsdb-gcp/scripts/install-zabbix.sh
 ```
 - List VM and external IPv4
 
