@@ -2,7 +2,7 @@
 #
 # Install and configure Zabbix with TSDB
 #
-# Lukas Maly <Iam@LukasMaly.NET> 8.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 9.11.2020
 #
 
 ## PostgreSQL
@@ -73,7 +73,7 @@ echo "--- Rekconfigure Zabbix agent ---"
 /usr/local/etc/rc.d/zabbix_agentd enable
 
 cp -v /usr/local/etc/zabbix5/zabbix_agentd.conf.sample /usr/local/etc/zabbix5/zabbix_agentd.conf
-sed -e "s/Hostname=Zabbix server/Hostname=fbsd-zbx-tsdb/" -i "" /usr/local/etc/zabbix5/zabbix_agentd.conf
+sed -e "s/Hostname=Zabbix server/Hostname=zbx-fbsd-tsdb/" -i "" /usr/local/etc/zabbix5/zabbix_agentd.conf
 sed -e "s/# Include=\/usr\/local\/etc\/zabbix5\/zabbix_agentd.conf.d\/*.conf/Include=\/usr\/local\/etc\/zabbix5\/zabbix_agentd.conf.d\/*.conf/" -i "" /usr/local/etc/zabbix5/zabbix_agentd.conf
 
 /usr/local/etc/rc.d/zabbix_agentd restart
