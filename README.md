@@ -26,7 +26,7 @@ By Google Cloud SDK is intalled server zbx-fbsd-tsdb. After instalation run scri
 
 - Configure Google Cloud SDK
 
-```
+```console
 gcloud config set compute/zone [ZONE]
 gcloud config set compute/region [REGION]
 gcloud config set project [PROJECT]
@@ -34,13 +34,13 @@ gcloud config set project [PROJECT]
 
 - Create VM
 
-```
+```console
 cd /home/malyl/work/zbx-fbsd-tsdb-gcp
 ./scripts/create-gcp-vm.sh
 ```
 - Connect to VM and run scripts
 
-```
+```console
 gcloud compute ssh zbx-fbsd-tsdb
 sudo su -
 git clone https://github.com/smejdil/zbx-fbsd-tsdb-gcp
@@ -55,13 +55,13 @@ http://35.246.211.200/zabbix/
 
 - List VM and external IPv4
 
-```
+```console
 gcloud compute instances list | awk '{print $1" - "$5}' | grep zbx-fbsd-tsdb
 zbx-fbsd-tsdb - 35.246.211.200
 ```
 - Create DNS records
 
-```
+```console
 cli4 --post name='zabbix-gcp' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
 
 nslookup zabbix-gcp.pfsense.cz
@@ -72,12 +72,13 @@ Address: 35.246.211.200
 ```
 - Install Zabbix API example
 - Create Zabbix user for API
-```
+```console
 cd ./zbx-fbsd-tsdb-gcp/zabbix/api/
 ./install.sh
 ```
 - Get SSL cert
-```
+
+```console
 cd /usr/ports/security/py-certbot-dns-cloudflare
 make install clean
 
@@ -96,13 +97,13 @@ certbot certonly \
 ...
 ```
 - Enable SSL with Let's encrypt
-```
+```console
 ./zbx-fbsd-tsdb-gcp/scripts/ssl-enable.sh
 ```
 https://zabbix-gcp.pfsense.cz
 
 - Upgrade all ports
-```
+```console
 portsnap fetch && portsnap update && pkg version -v | grep upd
 screen
 portupgrade -a
